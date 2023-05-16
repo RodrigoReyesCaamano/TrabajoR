@@ -7,5 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+```
+
+```{r}
+Trabajo_personal_R <- read_excel("Trabajo personal R.xlsx")
+
+hist(Trabajo_personal_R$MO)
+
 ```
 
