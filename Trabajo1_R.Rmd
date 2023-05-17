@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(readxl)
+library(ggplot2)
 ```
 
 ```{r}
@@ -17,4 +18,27 @@ Trabajo_personal_R <- read_excel("Trabajo personal R.xlsx")
 hist(Trabajo_personal_R$MO)
 
 ```
+```{r}
+
+boxplot(Trabajo_personal_R$SFR~Trabajo_personal_R$DIETA)
+
+```
+```{r}
+
+library(ggplot2)
+
+ggplot(Trabajo_personal_R, aes(x = Trabajo_personal_R$DIETA, y = Trabajo_personal_R$MO)) +
+  geom_boxplot()
+
+
+```
+```{r}
+library(ggplot2)
+
+ggplot(Trabajo_personal_R, aes(x = Trabajo_personal_R$DIETA, y = Trabajo_personal_R$SFR)) +
+  geom_boxplot()
+
+```
+
+
 
