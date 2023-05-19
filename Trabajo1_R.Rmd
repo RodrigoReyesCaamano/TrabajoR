@@ -15,10 +15,8 @@ library(ggplot2)
 ```{r}
 Trabajo_personal_R <- read_excel("Trabajo personal R.xlsx")
 
-hist(Trabajo_personal_R$MO)
-
 ggplot(Trabajo_personal_R, aes(MO))+
-geom_histogram(color="white", fill="red", bins = 10)+
+geom_histogram(color="black", fill="red", bins = 10)+
 labs(title="Histograma Mortalidad (%)", x="Mortalidad (%)",
 y="Frecuencia") + theme_gray()
 
@@ -26,31 +24,23 @@ y="Frecuencia") + theme_gray()
 ```{r}
 
 ggplot(Trabajo_personal_R, aes(SFR))+
-geom_histogram(color="white", fill="green", bins = 10)+
+geom_histogram(color="black", fill="green", bins = 10)+
 labs(title="Histograma SFR (%)", x="SFR (%)",
 y="Frecuencia") + theme_gray()
 
 ```
 
-
 ```{r}
-boxplot(Trabajo_personal_R$SFR~Trabajo_personal_R$DIETA)
+
+ggplot(Trabajo_personal_R, aes(x=DIETA, y=MO))+
+geom_boxplot(color="black", fill="red", bins = 10)+
+labs(title="Boxplot Mortalidad (%)", x="DIETA", y="Mortalidad") + theme_gray()
 
 ```
 ```{r}
-
-library(ggplot2)
-
-ggplot(Trabajo_personal_R, aes(x = Trabajo_personal_R$DIETA, y = Trabajo_personal_R$MO)) +
-  geom_boxplot()
-
-
-```
-```{r}
-library(ggplot2)
-
-ggplot(Trabajo_personal_R, aes(x = Trabajo_personal_R$DIETA, y = Trabajo_personal_R$SFR)) +
-  geom_boxplot()
+ggplot(Trabajo_personal_R, aes(x=DIETA, y=SFR))+
+geom_boxplot(color="black", fill="green", bins = 10)+
+labs(title="Boxplot SFR (%)", x="DIETA", y="SFR") + theme_gray()
 
 ```
 
