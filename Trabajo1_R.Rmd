@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(readxl)
 library(ggplot2)
+library(dplyr)
 ```
 
 ```{r}
@@ -42,6 +43,15 @@ ggplot(Trabajo_personal_R, aes(x=DIETA, y=SFR))+
 geom_boxplot(color="black", fill="green", bins = 10)+
 labs(title="Boxplot SFR (%)", x="DIETA", y="SFR") + theme_gray()
 
+```
+```{r}
+
+str(Trabajo_personal_R)
+
+```
+```{r}
+
+summary(Trabajo_personal_R)
 ```
 
 
