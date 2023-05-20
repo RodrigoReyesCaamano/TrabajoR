@@ -1,9 +1,15 @@
 ---
 title: "Trabajo1_R"
 author: "Rodrigo Reyes"
-date: "2023-05-13"
-output: html_document
+date: "2023-05-20"
+output:
+  html_document: default
+  pdf_document: default
 ---
+Identificar indicadores predictivos de performance sanitario para salmones en cultivo. Con el fin de mitigar la presentación de brotes de enfermedad. Las variables en estudio evaluarán el desempeño de 3 dietas suministradas durante el ciclo productivo de mar (2021-2022) de Salmon del Atlantico en un centro de cultivo de la XI Región. Estas, consideran Mortalidad total (%) y SFR (%) diaria desde 08/08/2021 al 11/09/2022. El número de observaciones son 2.880 y las variables serán 3 (Dieta, Mortalidad total (%) y SFR (%)) y quizá se explore al nivel de jaula.
+
+# Importa librerías de interés.
+Se instalaron paquetes readxl, ggplot2, dyplr, gridExtra, grid.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -16,37 +22,66 @@ library(grid)
 
 ```
 
+# Evaluación de variables
+La variable mortalidad tiene una desviación a la izquierda de los datos, concentrando valores en 0 y 0,5%.
+La variable SFR tiene una desviación a la izquierda de los datos, concentrando valores en 0 y 1%.
+
+
+
 ```{r}
-Trabajo_personal_R <- read_excel("Trabajo personal R.xlsx")
 
 ggplot(Trabajo_personal_R, aes(MO))+
 geom_histogram(color="black", fill="red", bins = 10)+
-labs(title="Histograma Mortalidad (%)", x="Mortalidad (%)",
+labs(title="Histograma MORTALIDAD (%)", x="Mortalidad (%)",
 y="Frecuencia") + theme_gray()
-
 ```
+
+
+
 ```{r}
 
 ggplot(Trabajo_personal_R, aes(SFR))+
-geom_histogram(color="black", fill="green", bins = 10)+
+geom_histogram(color="black", fill="blue", bins = 10)+
 labs(title="Histograma SFR (%)", x="SFR (%)",
 y="Frecuencia") + theme_gray()
 
 ```
+# Se evalua balance de datos
+En base a este resultado, se evaluarán Mortalidad y SFR por Jaula.
+Dieta Control: Jaulas 105 y 106.
+Dieta Desafío: Jaulas 107 y 108.
 
 ```{r}
 
-ggplot(Trabajo_personal_R, aes(x=DIETA, y=MO))+
-geom_boxplot(color="black", fill="red", bins = 10)+
-labs(title="Boxplot Mortalidad (%)", x="DIETA", y="Mortalidad") + theme_gray()
+Trabajo_personal_R <- read_excel("Trabajo personal R.xlsx")
+table(Trabajo_personal_R$DIETA,Trabajo_personal_R$Jaula)
 
 ```
+
+# Relación entre variables cuantitativas
+
+Se evalúa la distribución de las variables Mortalidad y SFR agrupadas durante todo el ciclo productivo de mar, con detalle por Jaula. En donde se aprecia que jaulas desafío presentan menor mortalidad y SFR promedio, respecto de las jaulas control.
+
 ```{r}
-ggplot(Trabajo_personal_R, aes(x=DIETA, y=SFR))+
-geom_boxplot(color="black", fill="green", bins = 10)+
-labs(title="Boxplot SFR (%)", x="DIETA", y="SFR") + theme_gray()
+
+ggplot(Trabajo_personal_R, aes(x=Jaula, y=MO))+
+geom_boxplot(color="black", fill="red")+
+labs(title="Boxplot Mortalidad (%)", x="JAULA", y="Mortalidad") + theme_gray()
 
 ```
+
+
+```{r}
+ggplot(Trabajo_personal_R, aes(x=Jaula, y=SFR))+
+geom_boxplot(color="black", fill="blue", bins = 10)+
+labs(title="Boxplot SFR (%)", x="Jaula", y="SFR") + theme_gray()
+
+```
+# Revisión estructura de la información.
+
+Se evidencia un gran número de observaciones NA, las cuales se proceden a omitir, sin embargo, reduce mucho el número de observaciones. Dejando solo los días con tratamiento con FFC.
+
+
 ```{r}
 
 str(Trabajo_personal_R)
@@ -72,16 +107,24 @@ Trabajo_personal_R_new <- na.omit(Trabajo_personal_R)
 dim(Trabajo_personal_R_new)
 
 ```
+
+# Analisis exploratorio de datos
+
+Evaluando el comportamiento de la mortalidad y SFR durante el ciclo productivo, Se aprecia un quiebre en la alimentación en Enero de 2022, lo cual no va correlacionado con el estado sanitario. Sin embargo, podría ser un predictor del posterior desmedro en condición sanitaria (abril), también habría que descartar un aumento en la temperatura del agua y aumento en el tamaño de peces, lo cual hace consuman un menor % de PC.
+
+
 ```{r}
 
 ggplot(Trabajo_personal_R, aes(x=Fecha, y=MO))+
 geom_line(color="red", bins = 10)+
 labs(title="Linea Mortalidad (%)", x="Fecha", y="Mortalidad") + theme_gray()
+
 ```
+
+
 ```{r}
 ggplot(Trabajo_personal_R, aes(x=Fecha, y=SFR))+
-geom_line(color="green", bins = 10)+
-labs(title="Linea SFR (%)", x="Fecha", y="SFR") + theme_gray()
+geom_line(color="blue", bins = 10)+
+labs(title="Linea SFR (%)", x="Fecha", y="Mortalidad") + theme_gray()
 ```
-```{r}
 
