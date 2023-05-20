@@ -6,10 +6,11 @@ output:
   html_document: default
   pdf_document: default
 ---
+
 Identificar indicadores predictivos de performance sanitario para salmones en cultivo. Con el fin de mitigar la presentación de brotes de enfermedad. Las variables en estudio evaluarán el desempeño de 3 dietas suministradas durante el ciclo productivo de mar (2021-2022) de Salmon del Atlantico en un centro de cultivo de la XI Región. Estas, consideran Mortalidad total (%) y SFR (%) diaria desde 08/08/2021 al 11/09/2022. El número de observaciones son 2.880 y las variables serán 3 (Dieta, Mortalidad total (%) y SFR (%)) y quizá se explore al nivel de jaula.
 
 # Importa librerías de interés.
-Se instalaron paquetes readxl, ggplot2, dyplr, gridExtra, grid.
+Se instalaron paquetes readxl, ggplot2, dyplr, gridExtra, grid, kableExtra, tidyverse.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -19,23 +20,29 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 library(grid)
+library(kableExtra)
+library(tidyverse)
 
 ```
+
+
+```{r}
+
+Trabajo_personal_R <- read_excel("Trabajo personal R.xlsx")
+```
+
 
 # Evaluación de variables
 La variable mortalidad tiene una desviación a la izquierda de los datos, concentrando valores en 0 y 0,5%.
 La variable SFR tiene una desviación a la izquierda de los datos, concentrando valores en 0 y 1%.
 
-
-
 ```{r}
 
 ggplot(Trabajo_personal_R, aes(MO))+
 geom_histogram(color="black", fill="red", bins = 10)+
-labs(title="Histograma MORTALIDAD (%)", x="Mortalidad (%)",
+labs(title="Histograma MORTALIDAD (%)", x="SFR (%)",
 y="Frecuencia") + theme_gray()
 ```
-
 
 
 ```{r}
@@ -58,6 +65,7 @@ table(Trabajo_personal_R$DIETA,Trabajo_personal_R$Jaula)
 
 ```
 
+
 # Relación entre variables cuantitativas
 
 Se evalúa la distribución de las variables Mortalidad y SFR agrupadas durante todo el ciclo productivo de mar, con detalle por Jaula. En donde se aprecia que jaulas desafío presentan menor mortalidad y SFR promedio, respecto de las jaulas control.
@@ -77,6 +85,8 @@ geom_boxplot(color="black", fill="blue", bins = 10)+
 labs(title="Boxplot SFR (%)", x="Jaula", y="SFR") + theme_gray()
 
 ```
+
+
 # Revisión estructura de la información.
 
 Se evidencia un gran número de observaciones NA, las cuales se proceden a omitir, sin embargo, reduce mucho el número de observaciones. Dejando solo los días con tratamiento con FFC.
@@ -116,15 +126,38 @@ Evaluando el comportamiento de la mortalidad y SFR durante el ciclo productivo, 
 ```{r}
 
 ggplot(Trabajo_personal_R, aes(x=Fecha, y=MO))+
-geom_line(color="red", bins = 10)+
+geom_line(color="red")+
 labs(title="Linea Mortalidad (%)", x="Fecha", y="Mortalidad") + theme_gray()
 
 ```
 
+```{r}
+
+ggplot(Trabajo_personal_R, aes(x=Fecha, y=MO, group = DIETA, colour = DIETA))+
+geom_line()+
+labs(title="Linea Mortalidad (%)", x="Fecha", y="Mortalidad") +
+theme_gray()
+
+```
 
 ```{r}
+
 ggplot(Trabajo_personal_R, aes(x=Fecha, y=SFR))+
 geom_line(color="blue", bins = 10)+
 labs(title="Linea SFR (%)", x="Fecha", y="Mortalidad") + theme_gray()
+
+```
+
+#Resumen de datos
+Se evalua desempeño promedio, en mortalidad y SFR durante todo el ciclo productivo de mar, por jaula.
+
+```{r}
+
+Trabajo_personal_R %>%
+  group_by(Jaula, DIETA) %>%
+  summarize(mean(MO), mean(SFR)) %>% 
+  kbl() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
