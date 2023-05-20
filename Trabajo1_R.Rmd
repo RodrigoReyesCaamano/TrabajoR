@@ -11,6 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readxl)
 library(ggplot2)
 library(dplyr)
+library(gridExtra)
+library(grid)
+
 ```
 
 ```{r}
@@ -53,6 +56,32 @@ str(Trabajo_personal_R)
 
 summary(Trabajo_personal_R)
 ```
+```{r}
 
+dim(Trabajo_personal_R)
 
+```
+```{r}
+
+Trabajo_personal_R_new <- na.omit(Trabajo_personal_R)
+
+```
+
+```{r}
+
+dim(Trabajo_personal_R_new)
+
+```
+```{r}
+
+ggplot(Trabajo_personal_R, aes(x=Fecha, y=MO))+
+geom_line(color="red", bins = 10)+
+labs(title="Linea Mortalidad (%)", x="Fecha", y="Mortalidad") + theme_gray()
+```
+```{r}
+ggplot(Trabajo_personal_R, aes(x=Fecha, y=SFR))+
+geom_line(color="green", bins = 10)+
+labs(title="Linea SFR (%)", x="Fecha", y="SFR") + theme_gray()
+```
+```{r}
 
