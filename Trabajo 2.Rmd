@@ -24,10 +24,6 @@ library(randomForest)
 library(nnet)
 library(lmtest)
 library(car)
-library(kableExtra)
-library(ggstatsplot)
-library(dunn.test)
-library(DescTools)
 ```
 
 ```{r}
@@ -151,36 +147,7 @@ cex.lab=1.5, cex.axis=1.5, sub = "")
 
 ```{r}
 lv <- leveneTest(SFR ~ DIETA, data = Trabajo_personal_R_2,
-center = "median") 
-lv %>% kable(digits = 3)
-```
-
-```{r}
-plot(res.aov, 2, pch=20, col = "blue")
-```
-
-```{r}
-aov_residuals <- residuals(object = res.aov)
-shapiro.test(x= aov_residuals)
-```
-
-```{r}
-resultado_kruskal <- kruskal.test(SFR ~ DIETA, data =Trabajo_personal_R_2)
-print(resultado_kruskal)
-```
-```{r}
-resultado_dunn <- DunnTest(Trabajo_personal_R_2$SFR,
-                           Trabajo_personal_R_2$DIETA,
-                           method = "bonferroni")
-print(resultado_dunn)
-ggbetweenstats(Trabajo_personal_R_2,x = DIETA,
-               y = SFR,
-               type = "nonparametric",
-               p.adjust.method = "bonferroni",
-               pairwise.display = "significant",
-              ) +
-  ylab("SFR")+
-  theme_classic() +theme(legend.position = "FALSE")
+center = "median") lv %>% kable(digits = 3)
 ```
 
 
