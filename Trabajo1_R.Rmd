@@ -10,7 +10,6 @@ output:
 # Evaluación de 3 dietas (Normal, Control y Desafío) en cuánto a desempeño de SFR según los días de cultivo de cada grupo, esto, dentro de un ciclo completo de Salmo salar en la XI Región. 
 
 # Importa librerías de interés.
-Se instalaron paquetes readxl, ggplot2, dyplr, gridExtra, grid, kableExtra, tidyverse.
 
 ```{r}
 library(readxl)
@@ -57,7 +56,7 @@ y="Frecuencia") + theme_gray()
 
 # Balance de datos
 En base a este resultado, se evaluarán SFR por grupo de dieta. Considerando:
-Dieta Normal: Jaulas 101 a 104.
+Dieta Normal: Jaulas 101 a 104. Presenta más observaciones, respecto de grupos Control y Desafío.
 Dieta Control: Jaulas 105 y 106.
 Dieta Desafío: Jaulas 107 y 108.
 
@@ -80,10 +79,11 @@ labs(title="Boxplot DIETA (%)", x="DIETA", y="SFR") + theme_gray()
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(x=JAULA, y=SFR))+
 geom_boxplot(color="black", fill="green")+
-labs(title="Boxplot DIETA (%)", x="JAULA", y="SFR") + theme_gray()
+labs(title="Boxplot JAULA", x="JAULA", y="SFR") + theme_gray()
 ```
 
 # Revisión estructura de la información.
+Se modifica base de datos inicial, dejando 2.880 observaciones con 11 variables (se incluye dia del ciclo productivo)
 
 ```{r}
 str(Trabajo_personal_R_2)
@@ -98,6 +98,7 @@ dim(Trabajo_personal_R_2)
 ```
 
 # Analisis exploratorio de datos
+SFR durante todo el ciclo de cultivo va variando, no presentando una distribución normal.
 
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(x=DIA, y=SFR))+
@@ -105,6 +106,7 @@ geom_line(color="blue", bins = 10)+
 labs(title="LÍnea SFR (%)", x="DIA CULTIVO", y="SFR") + theme_gray()
 ```
 
+Al desglosar por DIETA, se aprecia no presentan distribución normal, se evaluarán los supuestos respectivos.
 
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(x=DIA, y=SFR, group =DIETA, colour = DIETA))+
@@ -113,20 +115,18 @@ labs(title="LÍnea SFR (%)", x="DIA CULTIVO", y="SFR") +
 theme_gray()
 ```
 
-# Resumen de datos
-Se evalua desempeño promedio, en SFR durante todo el ciclo productivo de mar, por jaula.
-
+#Resumen de Datos
 ```{r}
 Trabajo_personal_R_2 %>%
   group_by(JAULA, DIETA) %>%
-  summarize(mean(DIA),mean(PESO),mean(SFR))
+  summarize(mean(SFR))
 ```
 
 
 # Proponga hipótesis nula y alternativa para este experimento.
-Dietas tienen distinto desempeño en cuanto a SFR y PESO durante el ciclo productivo.
+Dietas tienen distinto desempeño en cuánto a SFR durante el ciclo productivo.
 
-H0:media SFR = / media PESO = / SFR*PESO =0
+H0:media SFR = / media DIETA = / SFR*DIETA =0
 
 ```{r}
 res.aov <- lm(SFR ~ DIETA, data = Trabajo_personal_R_2
@@ -184,17 +184,4 @@ ggbetweenstats(Trabajo_personal_R_2,x = DIETA,
 ```
 
 
-```{r}
-summary(res.aov)
-```
-
-```{r}
-res.aov <- lm(SFR ~ -1 + DIETA, data = Trabajo_personal_R_2)
-summary(res.aov)
-```
-
-```{r}
-res.aov2 <- lm(SFR ~ MO * SRS, data =Trabajo_personal_R_2)
-anova(res.aov2)
-```
 
