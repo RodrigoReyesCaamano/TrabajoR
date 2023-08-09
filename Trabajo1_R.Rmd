@@ -10,7 +10,6 @@ output:
 # Evaluación de 3 dietas (Normal, Control y Desafío) en cuánto a desempeño de SFR según los días de cultivo de cada grupo, esto, dentro de un ciclo completo de Salmo salar en la XI Región. 
 
 # Importa librerías de interés.
-
 ```{r}
 library(readxl)
 library(ggplot2)
@@ -23,10 +22,10 @@ library(randomForest)
 library(nnet)
 library(lmtest)
 library(car)
-library(kableExtra)
 library(ggstatsplot)
 library(dunn.test)
 library(DescTools)
+library(knitr)
 ```
 
 ```{r}
@@ -35,7 +34,6 @@ Trabajo_personal_R_2 <- read_excel("Trabajo personal R_2.xlsx")
 
 
 # Evaluación de variables
-La variable Peso tiene una desviación a la izquierda de los datos, concentrando mayores valores en el rango <1.000 gr.
 
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(PESO))+
@@ -43,8 +41,8 @@ geom_histogram(color="black", fill="BLUE", bins = 10)+
 labs(title="Histograma Peso", x="Peso (gr)",
 y="Frecuencia") + theme_gray()
 ```
+La variable Peso tiene una desviación a la izquierda de los datos, concentrando mayores valores en el rango <1.000 gr.
 
-La variable SFR tiene una desviación a la izquierda de los datos, concentrando valores en 0,5 y 1%.
 
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(SFR))+
@@ -52,18 +50,20 @@ geom_histogram(color="black", fill="red", bins = 10)+
 labs(title="Histograma SFR", x="SFR (%)",
 y="Frecuencia") + theme_gray()
 ```
+La variable SFR tiene una desviación a la izquierda de los datos, concentrando valores en 0,5 y 1%.
 
 
 # Balance de datos
-En base a este resultado, se evaluarán SFR por grupo de dieta. Considerando:
-Dieta Normal: Jaulas 101 a 104. Presenta más observaciones, respecto de grupos Control y Desafío.
-Dieta Control: Jaulas 105 y 106.
-Dieta Desafío: Jaulas 107 y 108.
 
 ```{r}
 Trabajo_personal_R <- read_excel("Trabajo personal R_2.xlsx")
 table(Trabajo_personal_R$DIETA,Trabajo_personal_R$JAULA)
 ```
+En base a este resultado, se evaluarán SFR por grupo de dieta. Considerando:
+Dieta Normal: Jaulas 101 a 104. Presenta más observaciones, respecto de grupos Control y Desafío.
+Dieta Control: Jaulas 105 y 106.
+Dieta Desafío: Jaulas 107 y 108.
+
 
 # Relación entre variables cuantitativas
 
@@ -75,15 +75,19 @@ ggplot(Trabajo_personal_R_2, aes(x=DIETA, y=SFR))+
 geom_boxplot(color="black", fill="red")+
 labs(title="Boxplot DIETA (%)", x="DIETA", y="SFR") + theme_gray()
 ```
+No se aprecian diferencias significativas en la distribución de SFR en las 3 dietas durante el ciclo productivo.
+
 
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(x=JAULA, y=SFR))+
 geom_boxplot(color="black", fill="green")+
 labs(title="Boxplot JAULA", x="JAULA", y="SFR") + theme_gray()
 ```
+No se aprecian diferencias significativas a nivel de jaula en la distribución de SFR durante el ciclo productivo.
+
 
 # Revisión estructura de la información.
-Se modifica base de datos inicial, dejando 2.880 observaciones con 11 variables (se incluye dia del ciclo productivo)
+Se modifica base de datos inicial, dejando 2.880 observaciones con 11 variables (se incluye día del ciclo productivo)
 
 ```{r}
 str(Trabajo_personal_R_2)
@@ -98,15 +102,14 @@ dim(Trabajo_personal_R_2)
 ```
 
 # Analisis exploratorio de datos
-SFR durante todo el ciclo de cultivo va variando, no presentando una distribución normal.
 
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(x=DIA, y=SFR))+
 geom_line(color="blue", bins = 10)+
 labs(title="LÍnea SFR (%)", x="DIA CULTIVO", y="SFR") + theme_gray()
 ```
+SFR durante todo el ciclo de cultivo va variando, no presentando una distribución normal.
 
-Al desglosar por DIETA, se aprecia no presentan distribución normal, se evaluarán los supuestos respectivos.
 
 ```{r}
 ggplot(Trabajo_personal_R_2, aes(x=DIA, y=SFR, group =DIETA, colour = DIETA))+
@@ -114,6 +117,8 @@ geom_line()+
 labs(title="LÍnea SFR (%)", x="DIA CULTIVO", y="SFR") +
 theme_gray()
 ```
+Al desglosar por DIETA, se aprecia no presentan distribución normal, se evaluarán los supuestos respectivos.
+
 
 #Resumen de Datos
 ```{r}
@@ -121,10 +126,13 @@ Trabajo_personal_R_2 %>%
   group_by(JAULA, DIETA) %>%
   summarize(mean(SFR))
 ```
+Se aprecia mayor desempeño en jaulas del grupo normal, quizas influenciado por mayor cantidad de observaciones.
 
 
 # Proponga hipótesis nula y alternativa para este experimento.
+
 Dietas tienen distinto desempeño en cuánto a SFR durante el ciclo productivo.
+Dieta Desafío presenta un maypr SFR durante el ciclo productivo, respecto de la dieta Control.
 
 H0:media SFR = / media DIETA = / SFR*DIETA =0
 
@@ -137,6 +145,7 @@ anova(res.aov)
 plot(res.aov$residuals, pch=20, col = "blue",
 cex.lab=1.25, cex.axis=1.25)
 ```
+Dado el valor de F, y gráfica de residuales indica modelo no es homogeneo.
 
 ```{r}
 dwtest(SFR ~ DIETA, data = Trabajo_personal_R_2,
@@ -148,6 +157,7 @@ iterations = 15)
 plot(res.aov, 1, pch=20, col = "blue",
 cex.lab=1.5, cex.axis=1.5, sub = "")
 ```
+Valor de p indica que datos no son independientes, teniendo cierto grado de correlación. La gráfica de residuales reafirma esto (solo con escasas excepciones)
 
 ```{r}
 lv <- leveneTest(SFR ~ DIETA, data = Trabajo_personal_R_2,
@@ -158,16 +168,20 @@ lv %>% kable(digits = 3)
 ```{r}
 plot(res.aov, 2, pch=20, col = "blue")
 ```
+Dado valor de prueba de leve y gráfica de residuales no se cumpliría con supuesto de homocedasticidad.
 
 ```{r}
 aov_residuals <- residuals(object = res.aov)
 shapiro.test(x= aov_residuals)
 ```
+Valor de p indica que datos no presentan distribución normal (< al nivel de significancia)
 
 ```{r}
 resultado_kruskal <- kruskal.test(SFR ~ DIETA, data =Trabajo_personal_R_2)
 print(resultado_kruskal)
 ```
+Prueba de KW indica hay diferencia entre los grupos evaluados.
+
 ```{r}
 resultado_dunn <- DunnTest(Trabajo_personal_R_2$SFR,
                            Trabajo_personal_R_2$DIETA,
@@ -183,5 +197,5 @@ ggbetweenstats(Trabajo_personal_R_2,x = DIETA,
   theme_classic() +theme(legend.position = "FALSE")
 ```
 
-
+Se realiza prueba no parametrica al desestimar los supuestos de homocedasticidad y normalidad anteriores. Al realizar ajuste de Bonferroni, no se aprecian diferencias significativas entre los grupos control y Desafío (aliemnto con Aditivo), ambos en similar periodo de entrega.
 
